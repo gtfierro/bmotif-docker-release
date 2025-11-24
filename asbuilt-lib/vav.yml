@@ -1,0 +1,121 @@
+vav-with-damper:
+  # Configuration for a standard VAV box with temperature and air flow control.
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:Variable_Air_Volume_Box ;
+        brick:hasPoint p:ztemp, p:dat, p:damperpos, p:dampercmd ;
+        brick:hasPart p:damper ;
+        brick:feeds p:zone .
+  dependencies:
+    - template: damper
+      args: {"name": "damper"}
+    - template: https://brickschema.org/schema/Brick#HVAC_Zone
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zone"}
+    - template: https://brickschema.org/schema/Brick#Zone_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "ztemp"}
+    - template: https://brickschema.org/schema/Brick#Discharge_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "dat"}
+    - template: https://brickschema.org/schema/Brick#Damper_Position_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "damperpos"}
+    - template: https://brickschema.org/schema/Brick#Damper_Position_Command
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "dampercmd"}
+
+vav-with-reheat:
+  # Configuration for a VAV box with reheat capabilities for added control.
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:Variable_Air_Volume_Box_With_Reheat ;
+        brick:hasPoint p:ztemp, p:dat ;
+        brick:hasPart p:damper, p:rhvalve ;
+        brick:feeds p:zone .
+  dependencies:
+    - template: damper
+      args: {"name": "damper"}
+    - template: reheat_valve
+      args: {"name": "rhvalve"}
+    - template: https://brickschema.org/schema/Brick#HVAC_Zone
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zone"}
+    - template: https://brickschema.org/schema/Brick#Zone_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "ztemp"}
+    - template: https://brickschema.org/schema/Brick#Discharge_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "dat"}
+
+vav-with-humidification:
+  # Configuration for a VAV box with humidification capabilities.
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:Variable_Air_Volume_Box ;
+        brick:hasPoint p:ztemp, p:zhumidity, p:dampercmd ;
+        brick:hasPart p:damper, p:humidifier ;
+        brick:feeds p:zone .
+  dependencies:
+    - template: damper
+      args: {"name": "damper"}
+    - template: humidifier
+      args: {"name": "humidifier"}
+    - template: https://brickschema.org/schema/Brick#HVAC_Zone
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zone"}
+    - template: https://brickschema.org/schema/Brick#Zone_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "ztemp"}
+    - template: https://brickschema.org/schema/Brick#Zone_Air_Humidity_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zhumidity"}
+    - template: https://brickschema.org/schema/Brick#Damper_Position_Command
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "dampercmd"}
+
+
+damper:
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:Damper ;
+        brick:hasPoint p:damperpos, p:dampercmd .
+  dependencies:
+    - template: https://brickschema.org/schema/Brick#Damper_Position_Command
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "dampercmd"}
+    - template: https://brickschema.org/schema/Brick#Damper_Position_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "damperpos"}
+
+reheat_valve:
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:Reheat_Valve ;
+        brick:hasPoint p:rvpos, p:rvcmd .
+  dependencies:
+    - template: https://brickschema.org/schema/Brick#Valve_Command
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "rvcmd"}
+    - template: https://brickschema.org/schema/Brick#Valve_Position_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "rvpos"}
+
+humidifier:
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:Humidifier ;
+      brick:hasPoint p:hcmd, p:hstpt .
+  dependencies:
+    - template: https://brickschema.org/schema/Brick#Humidify_Command
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "hcmd"}
+    - template: https://brickschema.org/schema/Brick#Humidity_Setpoint
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "hstpt"}

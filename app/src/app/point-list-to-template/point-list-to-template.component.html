@@ -1,0 +1,92 @@
+<div style="padding: 3rem;">
+  <h2>Point Schedule to Template</h2>
+
+  <p>
+  This tool converts a <b>point schedule</b> CSV file into a BuildingMOTIF <a href="https://buildingmotif.readthedocs.io/en/latest/explanations/templates.html">template</a>. Templates help generate semantic models by eliminating manual data entry when creating many similar points or equipment in the model. We generate the template in this step, and we will use the template later to help us build the model itself.
+  </p>
+
+  <p>
+  Upload the point schedule CSV file below.
+  The point schedule CSV file should have the following columns:
+  </p>
+  <ul>
+    <li><b>point</b>: contains the point abbreviation (e.g. <code>SA_T</code>)</li>
+    <li><b>description</b>: contains the point description (e.g. <code>Supply Air Temperature</code>)</li>
+  </ul>
+
+  <p>explanatory image goes here</p>
+
+  <p>
+  Now, click the <b>Generate</b> button below to generate the template.
+  The template will be generated using an <i>offline large language embedding model</i> to map the point descriptions in the schedule to Brick classes. The template will be displayed below. If you are not satisfied with the template, you can regenerate it by clicking the <b>Regenerate</b> button.
+  </p>
+
+  <div class="column">
+    <div class="row">
+      <div class="form">
+        <div class="blue-border">
+          <!--
+          <div style="margin-top: 1rem;">
+            <label for="libraryName">Library Name:</label>
+            <input id="libraryName" type="text" [(ngModel)]="libraryName">
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <label for="overwrite">Overwrite Library:</label>
+            <input id="overwrite" type="checkbox" [(ngModel)]="overwrite">
+          </div>
+          -->
+
+          <div style="margin-top: 1rem;">
+            <label for="templateName">Template Name:</label>
+            <input id="templateName" type="text" [(ngModel)]="templateName">
+          </div>
+
+          <div style="margin-top: 1rem; width: 400px;">
+            <mat-form-field>
+              <mat-label>Target Brick Class</mat-label>
+              <input #equipInput matInput
+                     placeholder="Select Equip Class"
+                     [matAutocomplete]="equipAuto"
+                     [value]="getBrickLabel(targetClass)"
+                     (input)="filterEquipClasses($event)"
+                     (blur)="onAutocompleteBlur(equipInput)">
+              <mat-autocomplete #equipAuto="matAutocomplete"
+                              (optionSelected)="onClassSelected($event, equipInput)"
+                              (opened)="onAutocompleteOpened()">
+                <mat-option *ngFor="let equipClass of filteredBrickEquipmentClasses" [value]="equipClass.uri">
+                  {{ equipClass.label || equipClass.uri }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <label for="pointListCSV">Upload Point Schedule CSV:</label>
+            <!-- use vav-point-schedule.csv for testing -->
+            <input id="pointListCSV" type="file" (change)="onFileSelected($event)">
+          </div>
+
+
+          <div style="display: flex; gap: 2rem; padding: 1rem 0rem; margin-top: 1rem;">
+            <button mat-raised-button (click)="sendFile()" [disabled]="isLoading || !isFormComplete()" color="primary">Generate</button>
+          </div>
+        </div> <!-- blue-border -->
+      </div> <!-- form -->
+      <div class="templatelist">
+        <h3>Existing Templates</h3>
+        <mat-list>
+          <mat-list-item *ngFor="let t of templatesList">
+            <!-- link to template detail -->
+            <p mat-line><a [routerLink]="['/templates', t.id]">{{t.name}}</a></p>
+          </mat-list-item>
+        </mat-list>
+      </div> <!-- templatelist -->
+    </div> <!-- row -->
+  </div> <!-- column -->
+  <div *ngIf="template !== null">
+    <button mat-raised-button (click)="regenerate()" color="primary">Regenerate Template</button>
+    <h2>Generated Template</h2>
+    <pre>{{template}}</pre>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="container">
+  <h2>Create Model Manifest</h2>
+  <p>A <b>manifest</b> is a set of "metadata requirements" for a particular metadata model.
+  This document defines the requirements for a metadata model, including the required points, equipment, and other elements.
+  It can also specify which points are required for a particular piece of equipment, which FDD rules must be implementable, and which points are required for those rules.
+  </p>
+  <p>We will create a simple manifest using the equipment schedule for the selected model.
+  The equipment schedule CSV file should have the following columns:
+  </p>
+  <ul>
+    <li><b>Equipment</b> contains a textual description of the equipment (e.g. <code>air handling unit</code>). Try to use generic names that are at least similar to the <a href="https://ontology.brickschema.org/brick/Equipment.html">Brick equipment classes</a></li>
+    <li><b>Count</b> a number representing the number of pieces of equipment of this type (e.g. <code>2</code>)</li>
+  </ul>
+  <p>Upload an equipment CSV file below and indicate the model you want to generate the for. Then click the <b>Generate</b> button to generate the manifest.
+  When you are finished, go to the <a routerLink="/models/{{selectedModelId}}">Model Page</a> and click over to the <code>Validate</code> tab to use the manifest to validate the model.
+  </p>
+  <div class="manifest-form">
+    <form [formGroup]="saveManifestForm" class="save-manifest-form">
+      <h4>From Equipment Schedule</h4>
+      <div style="display: flex; gap: 2em;">
+      <mat-form-field appearance="outline" floatLabel="never">
+        <input type="text" aria-label="namespace" placeholder="urn:equipment_manifest" matInput formControlName="namespaceControl" [(ngModel)]="namespace">
+        <mat-label>Manifest Graph Name</mat-label>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Select Model</mat-label>
+        <mat-select [(value)]="selectedModelId">
+          <mat-option *ngFor="let model of models" [value]="model.id">
+            {{ model.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      </div>
+      <div style="margin-top: 1rem;">
+        <label for="equipmentScheduleCSV">Upload Equipment Schedule CSV:</label>
+        <input id="equipmentScheduleCSV" type="file" (change)="handleEquipmentScheduleCSVInput($event)">
+      </div>
+    </form>
+  </div>
+    <button mat-raised-button (click)="sendFile()" [disabled]="!equipschedCSV || !selectedModelId || isLoading" color="primary">
+      {{ isLoading ? 'Loading...' : 'Generate' }}
+    </button>
+    <button mat-raised-button color="primary" [routerLink]="['/models', selectedModelId]" [disabled]="!turtleString">
+      Go to Model Page
+    </button>
+  </div>
+  <div *ngIf="turtleString">
+    <h4>Generated Manifest</h4>
+    <pre>{{turtleString}}</pre>
+  </div>

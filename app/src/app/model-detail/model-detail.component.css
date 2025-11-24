@@ -1,0 +1,179 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  height: 100vh;
+  width: 100%;
+}
+
+mat-drawer-container,
+mat-drawer-content {
+  width: 100%;
+}
+
+.main-content-and-button {
+  height: 100%;
+  display: flex;
+  position: relative;
+}
+
+.main-content {
+  padding: 16px 24px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.graph {
+  width: 100%;
+  min-width: 0;
+  height: 75vh;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.side-nav-button {
+  position: absolute;
+  top: 96px;
+  right: 0;
+  z-index: 10;
+}
+
+.sidenav-content {
+  width: 35%;
+  min-width: 320px;
+  border-left: 1px solid #e0e0e0;
+  padding: 16px 12px;
+}
+
+mat-tab-body-content {
+  overflow: auto;
+}
+
+.manifest-container {
+  display: flex;
+  gap: 24px;
+  padding-top: 12px;
+  align-items: flex-start;
+}
+
+.left-pane,
+.right-pane {
+  flex: 1 1 0;
+  min-width: 320px;
+  max-height: 75vh;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding: 8px 0 12px;
+  margin: 0 0 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pane-section {
+  margin-bottom: 12px;
+}
+
+.pane-section > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.pane-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.manifest-help {
+  margin: 8px 0 12px;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.param-group {
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: 1fr; /* header on top, fields below within the tile */
+  row-gap: 8px;
+}
+
+.param-type {
+  margin: 0; /* keep header tight so spacing is controlled by grid gaps */
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.param-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.param-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  min-width: 180px;
+}
+
+/* Compact template form grid */
+.param-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+/* Make the entire form a single responsive grid across all groups */
+.template-form.compact {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3-column layout of form groups */
+  gap: 16px;
+}
+
+.template-form.compact .buttons {
+  grid-column: 1 / -1;
+}
+
+/* Grid of fields inside each group tile */
+.param-group-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.param-label {
+  white-space: nowrap;
+  font-size: 12px;
+  color: #555;
+}
+
+.param-field .param-input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font: inherit;
+}

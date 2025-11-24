@@ -1,0 +1,30 @@
+<div class="container">
+  <div class="header">
+    <div class="header-left-side">
+      <div>Libraries</div>
+      <form class="search-form">
+        <mat-form-field class="search-bar" appearance="outline" floatLabel="never">
+          <input
+            type="text"
+            aria-label="Search library by name or id"
+            placeholder="Search library by name or id"
+            matInput
+            [formControl]="filterStringControl">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </form>
+    </div>
+    <div class="header-right-side">
+      <a mat-raised-button color="primary" routerLink="/libraries/new">New Library</a>
+    </div>
+  </div>
+
+  <mat-list *ngFor="let lib of filteredLibraries | async">
+    <mat-card class="model" routerLink="/libraries/{{lib.id}}">
+      <mat-card-title>{{ lib.name }}</mat-card-title>
+      <mat-card-subtitle>Library #{{ lib.id }}</mat-card-subtitle>
+    </mat-card>
+  </mat-list>
+
+  <p *ngIf="error" class="error">{{ error.message | json }}</p>
+</div>

@@ -1,0 +1,32 @@
+services:
+  app:
+    container_name: app
+    build: ./app
+    image: gtfierromines/interop_metadata_applications-app:latest
+    #volumes:
+    #  - type: bind
+    #    source: ./app
+    #    target: /app
+    ports:
+      - target: 4200
+        published: 4200
+        protocol: tcp
+        mode: host
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: interop_metadata_applications/api/Dockerfile
+    image: gtfierromines/interop_metadata_applications-api:latest
+    #volumes:
+    #  - type: bind
+    #    source: ./interop_metadata_applications/
+    #    target: /opt/interop_metadata_applications/
+    ports: 
+      - target: 5000
+        published: 5000
+        protocol: tcp
+        mode: host 
+    tty: true
+    stdin_open: true

@@ -1,0 +1,42 @@
+<div class="container">
+  <mat-progress-bar *ngIf="showValidatingSpinner" mode="indeterminate"></mat-progress-bar>
+      <p>
+      Select libraries to validate the model against. If no libraries are selected, the model manifest will be used for validation (this is already selected by default).
+      If you are unsure of what you want to validate against, we recommend that you <b>press "Validate Model" without selecting any additional libraries</b>.
+      </p>
+      <button mat-raised-button color="primary" (click)="validateModel()" [disabled]="isLoading">
+        {{ isLoading ? 'Validating...' : 'Validate Model' }}
+      </button>
+      <div>
+        <button mat-button (click)="selectAll()">Select All</button>
+        <button mat-button (click)="deselectAll()">Deselect All</button>
+      </div>
+      <form [formGroup]="selectedLibrariesForm">
+        <mat-list>
+          <mat-list-item *ngFor="let library of libraries">
+            <mat-checkbox [formControlName]="library.id.toString()">
+              {{ library.name }}
+            </mat-checkbox>
+          </mat-list-item>
+        </mat-list>
+      </form>
+      <span *ngIf="!isAnyLibrarySelected()" style="padding-left: 10px">Using model manifest for validation (default)</span>
+      <div *ngIf="validationResponse">
+        <h3>Validation Result</h3>
+        <p>Valid: {{ validationResponse.valid }}</p>
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let group of validationResponse.reasons | keyvalue">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ group.key == "null" ? "General" : group.key }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul>
+              <li *ngFor="let reason of group.value">
+                {{ reason }}
+              </li>
+            </ul>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+</div>

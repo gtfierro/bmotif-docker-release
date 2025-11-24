@@ -1,0 +1,19 @@
+.file-upload {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.form {
+  width: 60%;
+}
+
+.templatelist {
+  width: 35%;
+  padding-left: 1rem;
+}
+
+.form > input {
+  width: 100%;
+  margin-bottom: 1rem;
+}

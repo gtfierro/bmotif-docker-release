@@ -1,0 +1,63 @@
+ahu-variant-1:
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:AHU ;
+        brick:hasPart p:cooling_coil, p:heating_coil, p:supply_fan ;
+        brick:hasPoint p:outdoor_air_temp_sensor, p:return_air_temp_sensor, p:discharge_air_temp_sensor, p:supply_air_flow_sensor ;
+        brick:feeds p:zone .
+  dependencies:
+    - template: https://brickschema.org/schema/Brick#Cooling_Coil
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "cooling_coil"}
+    - template: https://brickschema.org/schema/Brick#Heating_Coil
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "heating_coil"}
+    - template: https://brickschema.org/schema/Brick#Supply_Fan
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "supply_fan"}
+    - template: https://brickschema.org/schema/Brick#Outside_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "outdoor_air_temp_sensor"}
+    - template: https://brickschema.org/schema/Brick#Return_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "return_air_temp_sensor"}
+    - template: https://brickschema.org/schema/Brick#Discharge_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "discharge_air_temp_sensor"}
+    - template: https://brickschema.org/schema/Brick#Supply_Air_Flow_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "supply_air_flow_sensor"}
+    - template: https://brickschema.org/schema/Brick#HVAC_Zone
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zone"}
+
+ahu-variant-2:
+  body: >
+    @prefix p: <urn:___param___#> .
+    @prefix brick: <https://brickschema.org/schema/Brick#> .
+    p:name a brick:AHU ;
+        brick:hasPart p:economizer_damper, p:return_fan ;
+        brick:hasPoint p:zone_temp_sensor, p:humidity_sensor, p:co2_sensor ;
+        brick:feeds p:zone .
+  optional: ['co2_sensor']
+  dependencies:
+    - template: https://brickschema.org/schema/Brick#Economizer_Damper
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "economizer_damper"}
+    - template: https://brickschema.org/schema/Brick#Return_Fan
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "return_fan"}
+    - template: https://brickschema.org/schema/Brick#Zone_Air_Temperature_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zone_temp_sensor"}
+    - template: https://brickschema.org/schema/Brick#Humidity_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "humidity_sensor"}
+    - template: https://brickschema.org/schema/Brick#CO2_Level_Sensor
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "co2_sensor"}
+    - template: https://brickschema.org/schema/Brick#HVAC_Zone
+      library: https://brickschema.org/schema/1.4/Brick
+      args: {"name": "zone"}
+

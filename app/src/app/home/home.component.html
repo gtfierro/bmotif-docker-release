@@ -1,0 +1,93 @@
+<h1>BuildingMOTIF Model Commissioning Workflow Tutorial</h1>
+<div class="container">
+    <!--
+  <div class="form-box">
+    <h4>Site Files</h4>
+    <input type="file" (change)="handlePointScheduleCSVInput($event)" #pointScheduleUpload hidden>
+    <div class="file-upload">
+      Point Schedule CSV: {{pointScheduleCSV?.name || ""}}
+      <button mat-mini-fab color="primary" class="upload-btn" (click)="pointScheduleUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </div>
+    <input type="file" (change)="handlePointListCSVInput($event)" #pointListUpload hidden>
+    <div class="file-upload">
+      Point Label CSV: {{pointListCSV?.name || ""}}
+      <button mat-mini-fab color="primary" class="upload-btn" (click)="pointListUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </div>
+  </div>
+    -->
+  <div>
+    <div>
+      <p>
+      This web application is a tutorial tool for the BuildingMOTIF software development kit (SDK).
+      The goal of this tutorial is to demonstrate some key parts of the BuildingMOTIF model commissioning workflow.
+      </p>
+      <ol>
+        <li>Define a <u>naming convention</u> for the building's point labels, or upload an existing CSV</li>
+        <li>Upload point schedules create <u>templates</u> which will be used to create a <u>metadata model</u> of the building</li>
+        <li>Upload a point list to create a model</li>
+        <!--<li>Parse point schedules, equipment schedules, and point labels to create a semantic model of a building using the Brick ontology</li>
+        <li>Fix errors in point labels</li>
+        <li>Generate a model <b>manifest</b> which validates the semantic model</li>
+        <li>Verify that the model contains all the necessary information for some FDD rules</li>
+        <li>Generate FDD rule implementations for PIsoft and a Python-based FDD engine</li>-->
+      </ol>
+      <p>
+      Proceed by clicking on each of the links below, in order. Start with <a routerLink="/point-list-to-template">Load Point Schedules</a>.
+    </div>
+  </div>
+  <div>
+    <div class="demo-menu menu-flow">
+      <div class="list-group">
+        <h4>Setup</h4>
+        <ul>
+        <li><a routerLink="/mapping">Define Naming Convention</a></li>
+        <li><a routerLink="/point-list-to-template">Create Templates from Point Schedules</a></li>
+        </ul>
+        <h4>Setup (Advanced)</h4>
+        <ul>
+        <li><a routerLink="/parse-point-labels">Configure Point Label Parser</a></li>
+        <li><a routerLink="/point-label-checker">Check Point Label Parse</a></li>
+        </ul>
+      </div>
+      <div class="list-group">
+        <h4>Create Metadata Model</h4>
+        <ul>
+        <li><a routerLink="/models/new">From Existing TTL file</a></li>
+        <li><a routerLink="/models/new">From Existing Point Dump file</a></li>
+        </ul>
+        <h4>Model Validation</h4>
+        <ul>
+        <li *ngIf="recent_model"><a routerLink="/manifest-generate">Create Model Manifest</a></li>
+        <li *ngIf="!recent_model" style="color: #ccc;">Create Model Manifest (no model)</li>
+        <li *ngIf="recent_model"><a [routerLink]="['/models', recent_model.id]">Validate Most Recent Model ({{recent_model.name}})</a></li>
+        <li *ngIf="!recent_model" style="color: #ccc;">Validate Most Recent Model (no model)</li>
+        </ul>
+      </div>
+      <div class="list-group">
+        <h4>Application Configuration</h4>
+          <ul>
+            <!--<li><a routerLink="/pointlabel_parser">Make Naming Convention</a></li>-->
+            <!--<li><a routerLink="/naming">Naming Convention Report (xlsx or txt file download)</a></li>-->
+            <li *ngIf="recent_model"><a routerLink="/rules">Generate FDD Rule Implementation Report</a></li>
+            <li *ngIf="!recent_model" style="color: #ccc;">Generate FDD Rule Implementation Report (no model)</li>
+          </ul>
+      </div>
+      <div class="list-group">
+        <h4>Database</h4>
+        <ul>
+          <li><a routerLink="/libraries">Libraries</a></li>
+          <li><a routerLink="/models">Models</a></li>
+          <li><a routerLink="/templates">Templates</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <p><i>If the UI is bugged, hit this button: </i>
+      <button mat-raised-button color="warn" (click)="clearDemoState()">Clear Demo State</button>
+  </p>
+</div>

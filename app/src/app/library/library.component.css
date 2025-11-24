@@ -1,0 +1,36 @@
+.container {
+  padding: 16px 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.header-left-side > div {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header-left-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-bar {
+  width: 320px;
+}
+
+.header-right-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.model {
+  margin-bottom: 8px;
+  cursor: pointer;
+}

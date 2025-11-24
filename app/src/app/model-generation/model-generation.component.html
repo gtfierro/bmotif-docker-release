@@ -1,0 +1,22 @@
+<div style="padding: 3rem;">
+  <h2>Model Generation</h2>
+
+  <div style="display: flex; gap: 2rem; padding: 1rem 0rem;">
+    <button mat-raised-button (click)="sendFile()" [disabled]="!pointListCSV" color="primary">Send</button>
+    <!-- if turtleString is not empty, display the turtleSTring in a pre tag -->
+  </div>
+  <div *ngIf="turtleString">
+    <form [formGroup]="saveModelForm" class="save-model-form">
+      <mat-form-field appearance="outline" floatLabel="never">
+        <input type="text" aria-label="model name" placeholder="Model Name" matInput formControlName="nameControl">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="never">
+        <textarea aria-label="model description" placeholder="Model Description" matInput formControlName="descriptionControl"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="saveModel()" [disabled]="saveModelForm.invalid">Save Model</button>
+    </form>
+    <app-model-network  [turtleData]=turtleString></app-model-network>
+    <h4>Generated Model</h4>
+    <pre>{{turtleString}}</pre>
+  </div>
+</div>

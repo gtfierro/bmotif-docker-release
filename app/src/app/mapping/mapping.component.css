@@ -1,0 +1,65 @@
+.container {
+  margin: 20px;
+}
+
+.actions {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 10px;
+}
+
+table {
+  width: 100%;
+}
+
+td.mat-cell, th.mat-header-cell {
+  padding-left: 8px;
+}
+
+.mat-column-description {
+  width: 300px;
+}
+.mat-column-brick_point_class {
+  width: 300px;
+}
+.mat-column-brick_equip_class {
+  width: 300px;
+}
+.mat-column-brick_location_class {
+  width: 300px;
+}
+
+.cell-input {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  font: inherit;
+  color: inherit;
+  height: 100%;
+  padding: 0;
+}
+
+.cell-input:focus {
+  outline: none;
+}
+
+/* ::ng-deep is used to style the autocomplete panel, which is rendered outside of the component's view. */
+::ng-deep .wide-autocomplete {
+  min-width: 600px !important;
+}
+
+.description-cell {
+  display: flex;
+  align-items: center;
+}
+
+.description-cell input {
+  flex-grow: 1;
+}
+
+.button-content-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

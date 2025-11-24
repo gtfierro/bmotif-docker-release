@@ -1,0 +1,25 @@
+.container {
+    padding: 3rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.header-right-side {
+    display: flex;
+    align-items: baseline;
+    gap: 3rem;
+}
+
+.search-bar {
+    width: 30rem;
+}
+
+.model {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}

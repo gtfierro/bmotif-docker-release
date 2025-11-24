@@ -1,0 +1,58 @@
+h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.menu-flow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+  min-width: 800px;
+}
+
+.form-box {
+  justify-content: center;
+  width: 40%;
+}
+
+.demo-menu {
+  padding-left: 1rem;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  text-align: left;
+}
+
+li {
+  margin: 10px 0;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.list-group {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 0 10px;
+  width: 30%;
+  flex: 1;
+}

@@ -1,0 +1,90 @@
+.file-input {
+    display: none;
+}
+
+.double-nested-results{
+    margin: 0 auto;
+}
+
+mat-tab-body{
+    width: 100%;
+}
+
+.mat-expansion-panel-header .mat-content{
+    align-items: baseline;
+}
+
+mat-expansion-panel-header{
+    align-items: baseline;
+}
+
+.checkbox-header .mat-content {
+    height: 24px;
+}
+
+.border-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    gap: 2rem;
+    border-radius: 5px;
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+    stroke: #2A79FF!important;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.details-table td {
+    border: 1px solid #d5d5d5;
+    padding: 4px 8px;
+    vertical-align: top;
+}
+
+.details-empty {
+    margin-top: 0.5rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Split layout: two columns */
+.container.split {
+    display: grid;
+    grid-template-columns: 1fr minmax(360px, 42%);
+    gap: 24px;
+    align-items: start;
+}
+
+.left-pane {
+    display: grid;
+    gap: 16px;
+}
+
+.right-pane {
+    min-width: 0;
+}
+
+.empty-state {
+    padding: 16px;
+    border: 1px dashed #bbb;
+    border-radius: 6px;
+    color: #555;
+    background: #fafafa;
+}
+
+@media (max-width: 1100px) {
+    .container.split {
+        grid-template-columns: 1fr;
+    }
+}
+
+:host ::ng-deep .wide-select-panel {
+    min-width: 600px;
+    max-width: 90vw;
+    white-space: normal;
+}

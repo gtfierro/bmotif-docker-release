@@ -1,0 +1,130 @@
+<div class="container">
+  <h1>Mappings</h1>
+
+  <p>
+    This page is for managing mappings from point abbreviations and descriptions to Brick classes.
+    You can add new mappings manually by clicking "Add Row", or upload a CSV file of existing mappings.
+    The "Suggest" buttons (the lightbulb icon) will use a machine learning model to guess the appropriate Brick classes for a given description.
+    Click "Suggest for Blanks" to fill in all missing point and equipment classes.
+    When you are finished, click "Save Mappings" to save your work.
+  </p>
+  <p>
+  <b>Demo: We recommend uploading the <code>finished_mapping.csv</code> file provided with this release as an example.</b>
+  </p>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="addRow()">Add Row</button>
+    <button mat-raised-button color="primary" (click)="fileInput.click()">Upload CSV</button>
+    <button mat-raised-button color="primary" (click)="downloadCsv()">Download CSV</button>
+    <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept=".csv">
+    <button mat-raised-button color="accent" (click)="saveMappings()" [disabled]="!isDirty">Save Mappings</button>
+    <button mat-raised-button (click)="suggestAll()" [disabled]="isSuggestingAll" matTooltip="Suggest Brick classes for all rows with a description but missing point or equip classes">
+      <div class="button-content-wrapper">
+        <mat-spinner *ngIf="isSuggestingAll" [diameter]="24"></mat-spinner>
+        <span>Suggest for Blanks</span>
+      </div>
+    </button>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+    <!-- Abbreviation Column -->
+    <ng-container matColumnDef="abbreviation">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Abbreviation </th>
+      <td mat-cell *matCellDef="let element">
+        <input class="cell-input" matInput [(ngModel)]="element.abbreviation" (ngModelChange)="markAsDirty()">
+      </td>
+    </ng-container>
+
+    <!-- Description Column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+      <td mat-cell *matCellDef="let element" class="description-cell">
+        <input class="cell-input" matInput [(ngModel)]="element.description" (ngModelChange)="markAsDirty()">
+        <button mat-icon-button (click)="suggestClass(element)" matTooltip="Suggest Brick classes for this description" [disabled]="suggestingClassesFor.has(element)">
+          <mat-spinner *ngIf="suggestingClassesFor.has(element)" [diameter]="24"></mat-spinner>
+          <mat-icon *ngIf="!suggestingClassesFor.has(element)">lightbulb</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Brick Point Class Column -->
+    <ng-container matColumnDef="brick_point_class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Brick Point Class </th>
+      <td mat-cell *matCellDef="let element">
+        <input #pointInput class="cell-input" matInput
+               placeholder="Select Point Class"
+               [matAutocomplete]="pointAuto"
+               [value]="getBrickLabel(element.brick_point_class)"
+               (input)="filterPointClasses($event)"
+               (blur)="onAutocompleteBlur(pointInput, element, 'brick_point_class')">
+        <mat-autocomplete #pointAuto="matAutocomplete"
+                        panelClass="wide-autocomplete"
+                        (optionSelected)="onClassSelected($event, element, 'brick_point_class', pointInput)"
+                        (opened)="onAutocompleteOpened('point')">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option *ngFor="let brickClass of filteredBrickPointClasses" [value]="brickClass.uri">
+            {{ brickClass.label || brickClass.uri }}
+          </mat-option>
+        </mat-autocomplete>
+      </td>
+    </ng-container>
+
+    <!-- Brick Equip Class Column -->
+    <ng-container matColumnDef="brick_equip_class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Brick Equip Class </th>
+      <td mat-cell *matCellDef="let element">
+        <input #equipInput class="cell-input" matInput
+               placeholder="Select Equip Class"
+               [matAutocomplete]="equipAuto"
+               [value]="getBrickLabel(element.brick_equip_class)"
+               (input)="filterEquipClasses($event)"
+               (blur)="onAutocompleteBlur(equipInput, element, 'brick_equip_class')">
+        <mat-autocomplete #equipAuto="matAutocomplete"
+                        panelClass="wide-autocomplete"
+                        (optionSelected)="onClassSelected($event, element, 'brick_equip_class', equipInput)"
+                        (opened)="onAutocompleteOpened('equip')">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option *ngFor="let brickClass of filteredBrickEquipClasses" [value]="brickClass.uri">
+            {{ brickClass.label || brickClass.uri }}
+          </mat-option>
+        </mat-autocomplete>
+      </td>
+    </ng-container>
+
+    <!-- Brick Location Class Column -->
+    <ng-container matColumnDef="brick_location_class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Brick Location Class </th>
+      <td mat-cell *matCellDef="let element">
+        <input #locationInput class="cell-input" matInput
+               placeholder="Select Location Class"
+               [matAutocomplete]="locationAuto"
+               [value]="getBrickLabel(element.brick_location_class)"
+               (input)="filterLocationClasses($event)"
+               (blur)="onAutocompleteBlur(locationInput, element, 'brick_location_class')">
+        <mat-autocomplete #locationAuto="matAutocomplete"
+                        panelClass="wide-autocomplete"
+                        (optionSelected)="onClassSelected($event, element, 'brick_location_class', locationInput)"
+                        (opened)="onAutocompleteOpened('location')">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option *ngFor="let brickClass of filteredBrickLocationClasses" [value]="brickClass.uri">
+            {{ brickClass.label || brickClass.uri }}
+          </mat-option>
+        </mat-autocomplete>
+      </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="warn" (click)="deleteRow(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

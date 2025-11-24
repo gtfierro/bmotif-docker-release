@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="header">
+        <div>Templates</div>
+
+        <!-- Template Search -->
+        <form class="example-form">
+            <mat-form-field class="search-bar" appearance="outline" floatLabel="never">
+                <input type="text"
+                    aria-label="Search templates by name"
+                    placeholder="Search templates by name"
+                    matInput
+                    [formControl]="fitlerStringControl">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+        </form>      
+    </div>
+
+    <!-- Loading  Templates -->
+    <div *ngIf="templates === undefined">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+
+    <!-- No Templates -->
+    <div *ngIf="templates === []"> no templates </div>
+
+    <!-- Templates List -->
+    <div *ngIf="templates">
+        <mat-list *ngFor="let template of filteredTemplates | async">
+            <mat-card class="template">
+            <mat-card-title>{{template.name}}</mat-card-title>
+            <mat-card-actions align="end">
+                <button mat-button *ngIf="evaulateModelId" (click)="openEvaluateTemplate(template.id)">Evaluate</button>
+                <button mat-button routerLink="/templates/{{template.id}}">Details</button>
+            </mat-card-actions>
+            </mat-card>
+        </mat-list>
+    </div>
+</div>

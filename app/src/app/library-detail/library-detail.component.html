@@ -1,0 +1,142 @@
+<div class="library-detail-container" *ngIf="library">
+  <div class="title">
+    {{ library.name }}
+    <span class="subtitle">Library #{{ library.id }}</span>
+  </div>
+
+  <mat-tab-group (selectedTabChange)="onTabsChange($event)">
+    <mat-tab label="Overview">
+      <div class="overview">
+        <div class="overview-item">
+          <span class="label">Name</span>
+          <span class="value">{{ library.name }}</span>
+        </div>
+        <div class="overview-item">
+          <span class="label">Library ID</span>
+          <span class="value">{{ library.id }}</span>
+        </div>
+        <div class="overview-item">
+          <span class="label">Shape Collection ID</span>
+          <span class="value">{{ shapeCollectionId ?? '—' }}</span>
+        </div>
+        <div class="overview-item">
+          <span class="label">Templates</span>
+          <span class="value">{{ templates.length }}</span>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Classes">
+      <div class="classes-pane">
+        <input
+          class="filter-input"
+          type="text"
+          placeholder="Filter by label, URI, or definition…"
+          [(ngModel)]="classFilter"
+          (input)="applyClassFilter()"
+        />
+        <div class="classes-list">
+          <div class="class-row" *ngFor="let c of filteredClasses">
+            <div class="class-label">
+              {{ c.label || '—' }}
+            </div>
+            <div class="class-uri">
+              <span>{{ c.uri }}</span>
+              <button class="link-btn" (click)="copy(c.uri)">Copy</button>
+            </div>
+            <div class="class-def" *ngIf="c.definition">
+              {{ c.definition }}
+            </div>
+          </div>
+          <div class="empty" *ngIf="!filteredClasses.length">
+            No classes found.
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Shapes">
+      <div class="shapes-pane">
+        <div class="left-nav">
+          <div class="section-title">Definition Types</div>
+          <div class="def-type"
+               [class.active]="def === selectedDefType"
+               *ngFor="let def of defTypes"
+               (click)="onSelectDefType(def)">
+            {{ def }}
+            <span class="count">{{ shapesByDefType[def]?.length || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="shapes-list">
+          <div class="loading" *ngIf="shapesLoading">Loading shapes…</div>
+          <ng-container *ngIf="!shapesLoading">
+            <div class="empty" *ngIf="!selectedDefType">Select a definition type</div>
+            <div class="empty" *ngIf="selectedDefType && !(shapesByDefType[selectedDefType]?.length)">No shapes</div>
+            <div class="shape-row" *ngFor="let s of (selectedDefType ? shapesByDefType[selectedDefType] : [])">
+              <div class="shape-label">{{ s.label || '—' }}</div>
+              <div class="shape-uri">
+                <span>{{ s.shape_uri }}</span>
+                <button class="link-btn" (click)="copy(s.shape_uri)">Copy</button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Templates">
+      <div class="templates-pane">
+        <input
+          class="filter-input"
+          type="text"
+          placeholder="Filter templates by name…"
+          [(ngModel)]="templateFilter"
+          (input)="applyTemplateFilter()"
+        />
+        <div class="empty" *ngIf="!filteredTemplates.length">No templates.</div>
+        <div class="templates-list" *ngIf="filteredTemplates.length">
+          <mat-card class="template-card" *ngFor="let t of filteredTemplates">
+            <mat-card-title>{{ t.name }}</mat-card-title>
+            <mat-card-subtitle>Template #{{ t.id }}</mat-card-subtitle>
+            <div class="template-actions">
+              <a mat-stroked-button color="primary" [routerLink]="['/templates', t.id]" target="_blank" rel="noopener">Open in new tab</a>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="TTL">
+      <div class="ttl-pane">
+        <div class="ttl-section">
+          <div class="section-title">Shape Collection TTL</div>
+          <div class="section-actions">
+            <button mat-stroked-button color="primary" (click)="downloadShapeTTL()" [disabled]="shapeTTLLoading">Download TTL</button>
+          </div>
+          <div class="ontology-name" *ngIf="ontologyName">
+            <span>Ontology Name:</span>
+            <code>{{ ontologyName }}</code>
+            <button class="link-btn" (click)="copy(ontologyName)">Copy</button>
+          </div>
+          <div class="hint" *ngIf="!ontologyName">
+            Ontology name unavailable for this library.
+          </div>
+
+          <div class="loading" *ngIf="shapeTTLLoading">Fetching TTL…</div>
+          <div class="hint" *ngIf="!shapeTTLLoading && shapeTTLError && !shapeCollectionTTL">
+            {{ shapeTTLError }}
+          </div>
+          <div class="ttl-viewer" *ngIf="shapeCollectionTTL">
+            <ngx-codemirror [options]="codeMirrorOptions" [ngModel]="shapeCollectionTTL"></ngx-codemirror>
+          </div>
+        </div>
+
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<div class="library-detail-container" *ngIf="!library">
+  <div class="empty">Loading library…</div>
+</div>

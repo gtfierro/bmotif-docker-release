@@ -1,0 +1,175 @@
+<mat-drawer-container class="container">
+  <mat-drawer-content>
+    <div class="main-content-and-button">
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="title">{{model.name}}</div>
+            <mat-progress-bar mode="indeterminate" *ngIf="updatingGraphSpinner"></mat-progress-bar>
+            <div class="graph-info" *ngIf="!updatingGraphSpinner">
+              <mat-tab-group (selectedTabChange)="onMainTabsChange($event)">
+                <mat-tab label="Edit Graph">
+                  <div class="graph">
+                  <ngx-codemirror #codemirror [options]="codeMirrorOptions" [formControl]="graphFormControl">
+                  </ngx-codemirror>
+                  </div>
+
+                  <!-- Buttons -->
+                  <div class="buttons">
+                      <button mat-raised-button (click)="onSave()" color="primary">Save</button>
+                      <button mat-raised-button (click)="undoChangesToGraph()" color="primary">Undo</button>
+                      <button mat-raised-button color="primary" (click)="fileInput.click()">
+                          <div>Update with file</div>
+                          <input type="file" id="file" hidden #fileInput (change)="updateGraphWithFile($event)">
+                      </button>
+                      <button mat-stroked-button color="primary" (click)="downloadGraphTTL()">Download TTL</button>
+                  </div>
+                </mat-tab>
+                <mat-tab label="Graph Summary">
+                  <ng-template matTabContent>
+                    <app-model-network [modelId]="model.id" [useClassNetwork]="true"></app-model-network>
+                  </ng-template>
+                </mat-tab>
+                <mat-tab label="Manifest">
+                  <ng-template matTabContent>
+                    <div class="manifest-container">
+                      <div class="left-pane">
+                        <details class="pane-section" open>
+                          <summary class="pane-header">
+                            <h3>Libraries</h3>
+                          </summary>
+                          <div class="manifest-toolbar" style="position: sticky; top: 0; background: #fff; z-index: 2; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                            <button mat-raised-button color="primary" (click)="selectAllLibraries()">Select All</button>
+                            <button mat-raised-button color="primary" (click)="saveManifest()">Save Manifest</button>
+                          </div>
+                          <p class="manifest-help">
+                            Select the libraries to include in this model's manifest. We recommend selecting ALL libraries for the most complete validation and discovery experience.
+                            Use "Select All" and then click "Save Manifest". You can also edit the Manifest TTL on the right.
+                          </p>
+                          <mat-selection-list [multiple]="true">
+                            <mat-list-option
+                              *ngFor="let lib of libraries"
+                              [selected]="selectedLibraryIds.has(lib.id)"
+                              (selectedChange)="onLibrarySelectionChange(lib, $event)"
+                            >
+                              {{ lib.name }}
+                            </mat-list-option>
+                          </mat-selection-list>
+                        </details>
+
+                        <details class="pane-section" open>
+                          <summary class="pane-header">
+                            <h3>Templates</h3>
+                          </summary>
+                          <mat-selection-list [multiple]="true">
+                            <mat-list-option
+                              *ngFor="let tmpl of templatesList"
+                              [selected]="selectedTemplateIds.has(tmpl.id)"
+                              (selectedChange)="onTemplateSelectionChange(tmpl, $event)"
+                            >
+                              {{ tmpl.name }}
+                            </mat-list-option>
+                          </mat-selection-list>
+                        </details>
+                      </div>
+
+                      <div class="right-pane">
+                        <h3>Manifest TTL</h3>
+                        <div class="graph">
+                          <ngx-codemirror #manifestEditor [options]="codeMirrorOptions" [formControl]="manifestFormControl">
+                          </ngx-codemirror>
+                        </div>
+                        <div class="buttons">
+                          <button mat-raised-button color="primary" (click)="saveManifestTTL()">Save TTL</button>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </mat-tab>
+                <mat-tab [label]="hasManifest ? 'Validate' : 'Validate (needs manifest)'" [disabled]="!hasManifest">
+                  <ng-template matTabContent>
+                    <div class="buttons">
+                      <button mat-stroked-button color="primary" (click)="mainValidateComp?.validate(true)">Re-run Validation</button>
+                    </div>
+                    <app-model-validate #mainValidate [modelId]="model.id"></app-model-validate>
+                  </ng-template>
+                </mat-tab>
+                <mat-tab label="Templates" [disabled]="!hasTemplates">
+                  <ng-template matTabContent>
+                    <div class="manifest-container">
+                      <div class="right-pane" style="flex: 1 1 auto; max-height: none;">
+                        <mat-accordion class="pane-section" [multi]="true" displayMode="flat">
+                          <mat-expansion-panel *ngFor="let t of templates; let i = index; trackBy: trackByTemplateFocus" (opened)="ensureTemplateForm(i)">
+                            <mat-expansion-panel-header>
+                              <mat-panel-title>
+                                {{ simplifyUriLabel(t.focus) || '(graph)' }}
+                              </mat-panel-title>
+                            </mat-expansion-panel-header>
+
+                            <ng-template matExpansionPanelContent>
+                              <!-- a) Web form grouped by parameter type (compact grid) -->
+                              <form *ngIf="t.parameters?.length" [formGroup]="forms[i]" class="template-form compact">
+                                <div class="param-group" *ngFor="let group of groupedParams[i] | keyvalue">
+                                  <h4 class="param-type">{{ simplifyUriLabel(group.key) }}</h4>
+                                  <div class="param-group-fields">
+                                    <div class="param-field" *ngFor="let p of group.value">
+                                      <label class="param-label" [attr.for]="'tmpl-'+i+'-'+p.name">{{ p.name }}</label>
+                                      <input class="param-input" type="text" [id]="'tmpl-'+i+'-'+p.name" [formControlName]="p.name" placeholder="Value" />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="buttons" style="margin-top: 8px;">
+                                  <button mat-raised-button color="primary" (click)="addTemplate(i)" [disabled]="!forms[i]">Add</button>
+                                </div>
+                              </form>
+
+                              <!-- b) Collapsible TTL body inside each template -->
+                              <mat-accordion class="ttl-accordion" [multi]="true" displayMode="flat">
+                                <mat-expansion-panel>
+                                  <mat-expansion-panel-header>
+                                    <mat-panel-title>Body (TTL)</mat-panel-title>
+                                  </mat-expansion-panel-header>
+                                  <pre><code>{{ t.body }}</code></pre>
+                                </mat-expansion-panel>
+                              </mat-accordion>
+                            </ng-template>
+                          </mat-expansion-panel>
+                        </mat-accordion>
+                      </div>
+                    </div>
+                  </ng-template>
+                </mat-tab>
+                <mat-tab label="Full Graph (slow)">
+                  <ng-template matTabContent>
+                    <app-model-network [modelId]="model.id" [useClassNetwork]="false"></app-model-network>
+                  </ng-template>
+                </mat-tab>
+              </mat-tab-group>
+            </div>
+        </div>
+
+        <!-- Side Nav Handle -->
+        <button class="side-nav-button" mat-flat-button (click)="drawer.toggle()" color="basic">
+            <mat-icon *ngIf="!drawer.opened"> arrow_backward </mat-icon>
+            <mat-icon *ngIf="drawer.opened"> arrow_forward </mat-icon>
+        </button>
+    </div>
+  </mat-drawer-content>
+
+    <!-- Side Nav Content-->
+    <mat-drawer #drawer class="sidenav-content" mode="side" position="end">
+        <mat-tab-group (selectedTabChange)="onSideTabsChange($event)">
+            <mat-tab label="Evaluate">
+                <app-template-search [evaulateModelId]=model.id (openEvaulateEvent)="openEvaulateEvent($event)"></app-template-search>
+            </mat-tab>
+            <mat-tab [label]="hasManifest ? 'Validate' : 'Validate (needs manifest)'" [disabled]="!hasManifest">
+                <div class="buttons">
+                  <button mat-stroked-button color="primary" (click)="sideValidateComp?.validate(true)">Re-run Validation</button>
+                </div>
+                <app-model-validate #sideValidate [modelId]="model.id"></app-model-validate>
+            </mat-tab>
+            <mat-tab label="Application Explorer">
+                <app-shape-validation [modelId]=model.id></app-shape-validation>
+            </mat-tab>
+        </mat-tab-group>
+    </mat-drawer>
+</mat-drawer-container>

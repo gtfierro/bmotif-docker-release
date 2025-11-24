@@ -1,0 +1,52 @@
+<div style="padding: 3rem;">
+  <h2>Naming Convention Check</h2>
+
+  <!-- parser input -->
+  <input type="file" class="file-input" (change)="handleParserJsonInput($event)" #parserUpload>
+  <div class="file-upload">
+    parser file: {{parserJson?.name || "No file uploaded yet."}}
+    <button mat-mini-fab color="primary" class="upload-btn" (click)="parserUpload.click()">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+  </div>
+
+  <!-- Buttons -->
+  <div style="display: flex; gap: 2rem; padding: 1rem 0rem;">
+    <button mat-raised-button (click)="sendFiles()" ng-disabled="pointlabelCSV || parserJson"
+      color="primary">Send</button>
+  </div>
+
+
+  <h2>Naming Convention Report</h2>
+  <b> TODO: make this a table so it is easier to see where parses failed?</b>
+
+  <div *ngIf="results !== null">
+    <h3>Successful Parses</h3>
+      <table mat-table [dataSource]="tableData" class="mat-elevation-z8">
+          <ng-container *ngFor="let column of tableSchema" [matColumnDef]="column">
+              <th mat-header-cell *matHeaderCellDef> {{ column }} </th>
+              <td mat-cell class="successful-parse" *matCellDef="let goodParse"> {{ goodParse[column] }} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="tableSchema"></tr>
+          <tr mat-row *matRowDef="let row; columns: tableSchema;"></tr>
+      </table>
+  </div>
+
+  <mat-accordion class="double-nested-results" multi *ngIf="results !== null">
+      <h3>Failed Parses</h3>
+      <mat-expansion-panel *ngFor="let badParse of results.failed">
+          <mat-expansion-panel-header class="failed-parse">
+              <div>
+                  {{badParse.unparsed_suffix}}
+              </div>
+          </mat-expansion-panel-header>
+          <ul>
+              <li *ngFor="let label of badParse.labels">
+                  {{ label }}
+              </li>
+          </ul>
+      </mat-expansion-panel>
+  </mat-accordion>
+
+</div>

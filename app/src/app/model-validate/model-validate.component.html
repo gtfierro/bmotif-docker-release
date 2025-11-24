@@ -1,0 +1,30 @@
+<div class="container">
+  <!-- Validate button removed; validation is triggered by external "Re-run Validation" buttons -->
+
+  <mat-progress-bar *ngIf="showValidatingSpinner" mode="indeterminate"></mat-progress-bar>
+  <span><b *ngIf="validationResponse">Valid?</b> {{ validationResponse?.valid }}</span>
+
+  <div *ngIf="validationResponse">
+    <h3>Validation Result</h3>
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let group of validationResponse?.reasons | keyvalue">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ group.key == "null" ? "General" : group.key }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ul>
+          <li *ngFor="let reason of group.value">
+            {{ reason }}
+          </li>
+        </ul>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+  <ngx-codemirror #codemirror
+      *ngIf = "validationResponse"
+      [(ngModel)]="validationResponse.message"
+      [options]="codeMirrorOptions">
+  </ngx-codemirror>
+
+</div>

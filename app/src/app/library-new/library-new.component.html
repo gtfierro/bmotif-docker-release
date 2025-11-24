@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="title">Create New Library</div>
+
+  <div class="cards">
+    <mat-card class="card">
+      <mat-card-title>From TTL</mat-card-title>
+      <mat-card-content>
+        <p>Upload a Turtle (.ttl) file describing your library. We’ll try to infer a name automatically.</p>
+        <div class="form-row">
+          <button mat-raised-button color="primary" (click)="ttlInput.click()" [disabled]="creatingFromTTL">
+            Choose TTL File
+          </button>
+          <input type="file" accept=".ttl,text/turtle" hidden #ttlInput (change)="onTTLFileSelected($event)">
+          <span class="file-label" *ngIf="ttlFile">{{ ttlFile.name }}</span>
+        </div>
+
+        <mat-form-field appearance="outline" class="name-field">
+          <mat-label>Library Name</mat-label>
+          <input matInput [(ngModel)]="ttlName" placeholder="Enter library name" />
+        </mat-form-field>
+      </mat-card-content>
+      <div class="mat-card-actions">
+        <button mat-stroked-button color="primary" (click)="createFromTTL()" [disabled]="creatingFromTTL || !ttlFile">
+          {{ creatingFromTTL ? 'Creating…' : 'Create Library' }}
+        </button>
+      </div>
+    </mat-card>
+
+    <mat-card class="card">
+      <mat-card-title>From Rules JSON</mat-card-title>
+      <mat-card-content>
+        <p>Upload a rules.json file; the backend will transform it into a SHACL library.</p>
+        <div class="form-row">
+          <button mat-raised-button color="primary" (click)="rulesInput.click()" [disabled]="creatingFromRules">
+            Choose Rules JSON
+          </button>
+          <input type="file" accept=".json,application/json" hidden #rulesInput (change)="onRulesFileSelected($event)">
+          <span class="file-label" *ngIf="rulesFile">{{ rulesFile.name }}</span>
+        </div>
+
+        <mat-form-field appearance="outline" class="name-field">
+          <mat-label>Library Name (optional)</mat-label>
+          <input matInput [(ngModel)]="rulesName" placeholder="Enter library name (optional)" />
+        </mat-form-field>
+      </mat-card-content>
+      <div class="mat-card-actions">
+        <button mat-stroked-button color="primary" (click)="createFromRules()" [disabled]="creatingFromRules || !rulesFile">
+          {{ creatingFromRules ? 'Creating…' : 'Create Library' }}
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+.file-input {
+    display: none;
+}
+
+table {
+    width: 100%;
+}
+
+.double-nested-results{
+    margin: 0rem 50rem;
+}
+
+mat-tab-body{
+    width: 100%;
+}
+
+.mat-expansion-panel-header .mat-content{
+    align-items: baseline;
+}
+
+mat-expansion-panel-header{
+    align-items: baseline;
+}
+
+.checkbox-header .mat-content {
+    height: 24px;
+  }
+
+
+.successful-parse {
+    background-color: #d9E8D9;
+}
+
+.failed-parse {
+    background-color: #ecc1c1;
+}

@@ -1,0 +1,32 @@
+<div class="container">
+  <h3>Suggested Templates</h3>
+  <p> {{ templateVMs.length }} template(s) suggested based on the model content.</p>
+  <p *ngIf="templateVMs.length === 0">No templates suggested yet. Run validation first.</p>
+
+  <div class="template-list" *ngIf="templateVMs.length > 0">
+    <div class="template-item" *ngFor="let item of templateVMs; let i = index; trackBy: trackByIndex">
+      <button class="accordion-header" type="button" (click)="toggleExpanded(i)" [attr.aria-expanded]="item.expanded">
+        <span>Template {{ i + 1 }}</span>
+        <span class="chevron" [class.expanded]="item.expanded">▸</span>
+      </button>
+
+      <div class="accordion-panel grid" *ngIf="item.expanded">
+        <form *ngIf="item.form" [formGroup]="item.form" class="template-form grid">
+          <ng-container *ngFor="let entry of item.grouped | keyvalue">
+            <h5 class="type-header">{{ simplifyUriLabel(entry.key) }}</h5>
+            <div class="param-field" *ngFor="let p of entry.value; let j = index">
+              <label class="param-label" [attr.for]="'param-' + i + '-' + j">{{ p.name }}</label>
+              <input class="param-input" type="text" [id]="'param-' + i + '-' + j" [formControlName]="p.name" placeholder="Value" />
+            </div>
+          </ng-container>
+        </form>
+
+
+        <details class="ttl-details">
+          <summary>Body (TTL)</summary>
+          <pre class="ttl">{{ item.data.body }}</pre>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>

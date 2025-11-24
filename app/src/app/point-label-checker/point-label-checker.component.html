@@ -1,0 +1,64 @@
+<div class="container">
+  <h2>Point Label Checker</h2>
+  <div>
+    <p>This tool presents the results of the <a href="/point-label-parser">Point Label Parser</a> applied to the <i>most recent</i> CSV uploaded on the <a href="/models/new">Create New Model</a> page. The parser is used to check the point labels in the CSV file for errors. The parser will identify any points that do not match the expected format and will display them below. For example, consider the following error:
+    </p>
+
+    <div class="file-container">
+      <div class="header">Example</div>
+      <pre>
+Error: Expected DA-T, got ZN-T Expected DPR-O, got ZN-T Expected EFFHTG-SP, got ZN-T Expected EFFCLG-SP,... (2 labels)
+Parse Error:
+
+Expected DA-T, got ZN-T
+Expected DPR-O, got ZN-T
+Expected EFFHTG-SP, got ZN-T
+Expected EFFCLG-SP, got ZN-T
+Expected HTGOCC-SP, got ZN-T
+Expected CLGOCC-SP, got ZN-T
+Expected HTG-O, got ZN-T
+Expected SAFLOW-SP, got ZN-T
+Expected ZN-H, got ZN-T
+Expected ZN-CO2, got ZN-T
+Bad labels:
+
+my_building_VAV_01/ZN-T
+my_building_VAV_02/ZN-T
+      </pre>
+    </div>
+    <p>
+    This means that the parser expected to see one of the following patterns: <code>DA-T, DPR-O, EFFHTG-SP, EFFCLG-SP, HTGOCC-SP, CLGOCC-SP, HTG-O, SAFLOW-SP, ZN-H, ZN-CO2</code>, but instead saw <code>ZN-T</code>. The parser will also display the labels that caused the error. In this case, the labels <code>my_building_VAV_01/ZN-T</code> and <code>my_building_VAV_02/ZN-T</code> caused the error. It is up to you how to fix this; in this case, the most likely cause of the error is the <a href="/point-label-parser">point label parser</a> does not have the <code>ZN-T</code> abbreviation in its dictionary. You can edit the code on the parser page to add the <code>ZN-T</code> abbreviation, and then re-run the parser by creating a new model on the <a href="/models/new">Create New Model</a> page.
+    </p>
+  </div>
+  <hr>
+  <h3>Errors</h3>
+  <div *ngIf="parseResults">
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let error of parseResults.errors | keyvalue">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Error: {{ error.key.substring(0, 100) }}... ({{ error.value.length }} labels)
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <h4>Parse Error:</h4>
+        <pre class="error-display">{{ error.key }}</pre>
+        <h4>Bad labels:</h4>
+        <ul>
+          <li *ngFor="let point of error.value">{{ point }}</li>
+        </ul>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngFor="let suffix of parseResults.unmatched_suffixes | keyvalue">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Unmatched Suffix: {{ suffix.key.substring(0, 100) }}... ({{ suffix.value.length }} labels)
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <h4>Bad labels:</h4>
+        <ul>
+          <li *ngFor="let point of suffix.value">{{ point }}</li>
+        </ul>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

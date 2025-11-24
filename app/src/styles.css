@@ -1,0 +1,95 @@
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+@import '~codemirror/lib/codemirror';
+@import '~codemirror/theme/material';
+@import '~codemirror/addon/lint/lint.css';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container {
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* light red background */
+.error-display {
+  background-color: #ffcccc;
+}
+
+/* class which uses blue border and rounded corners on a div */
+.blue-border {
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.column {
+  display: flex;
+  justify-content: left;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  justify-content: left;
+  flex-direction: row;
+}
+
+
+
+.file-container {
+    border: 1px solid #333;
+    width: auto;
+    padding: 10px;
+    margin: 0 auto;
+    box-shadow: 5px 5px 5px #ccc;
+}
+
+.header {
+    color: #000;
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#file-content {
+    color: #ff0000;
+    font-size: 14px;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.mat-progress-spinner circle, .mat-spinner circle {
+    stroke: #fff!important;
+}
+
+/* Make mat-select overlay panel wider when using panelClass="wide-select-panel" */
+.cdk-overlay-pane.wide-select-panel {
+  min-width: 800px !important;
+  max-width: 95vw !important;
+}
+
+/* Allow long option text to wrap and not be clipped (legacy and MDC) */
+.wide-select-panel .mat-select-panel,
+.wide-select-panel .mat-mdc-select-panel {
+  width: auto !important;
+  max-width: none !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Ensure option text can wrap across Angular Material variants */
+.wide-select-panel .mat-option,
+.wide-select-panel .mat-mdc-option {
+  white-space: normal !important;
+}
+
+.wide-select-panel .mat-option-text,
+.wide-select-panel .mdc-list-item__primary-text {
+  white-space: normal !important;
+}

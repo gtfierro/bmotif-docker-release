@@ -1,0 +1,43 @@
+#appcontainer {
+  /* stretch the app to the full viewport width, stack header on top of content */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  border: 1px solid #ccc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #fafafa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Top navigation inside the container */
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0 0.5rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.app-nav a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #1a73e8;
+}
+
+.app-nav a:hover {
+  text-decoration: underline;
+}
+
+.app-nav .divider {
+  color: #999;
+}
+
+/* Main content should take remaining width/space */
+.app-content {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0; /* allow child flex items to shrink properly */
+  margin-top: 0.75rem;
+}

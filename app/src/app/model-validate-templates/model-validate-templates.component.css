@@ -1,0 +1,112 @@
+.container{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.template-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #fff;
+}
+
+.params {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.param-name {
+  font-weight: 600;
+}
+
+.param-types {
+  color: #555;
+}
+
+/* Accordion styles */
+.accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7f7f7;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.accordion-header:hover {
+  background: #f0f0f0;
+}
+
+.chevron {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.accordion-panel {
+  padding-top: 8px;
+}
+
+/* Form/grid styles */
+.template-form {
+  margin-top: 8px;
+}
+
+.template-form.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.type-header {
+  margin: 8px 0 4px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+  grid-column: 1 / -1;
+}
+
+.param-group {
+  display: contents;
+}
+
+.param-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  min-width: 0;
+}
+
+.param-label {
+  white-space: nowrap;
+  font-size: 12px;
+  color: #555;
+  width: 50%;
+}
+
+.param-field .param-input {
+  width: 50%;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.ttl-details {
+  margin-top: 8px;
+}

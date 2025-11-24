@@ -1,0 +1,216 @@
+<div class="container split">
+
+  <div class="left-pane">
+
+  <h3>FDD Rule Configuration Check</h3>
+
+  <p>
+  This tool takes an uploaded rules JSON file and checks the selected model for its ability to run the FDD rules.
+  It does this by creating a "shape" for each rule, which is a set of required properties and their types.
+  The tool then checks the model for the presence of these properties and their types.
+  It generates a report that shows which rules are applicable to the model and which rules are not (and why).
+  </p>
+
+  <div class="border-box">
+    <p>
+    First, select a model from the list below. Then, upload a rules JSON file.
+    </p>
+
+    <!-- model input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Select Model</mat-label>
+      <mat-select [(value)]="selectedModelId" panelClass="wide-select-panel">
+        <mat-option *ngFor="let model of models" [value]="model.id">
+          {{ model.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- rules input -->
+    <input type="file" class="file-input" (change)="handleRulesJsonInput($event)" #rulesUpload>
+    <div class="file-upload">
+      rules file: {{rulesJson?.name || "No file uploaded yet."}}
+      <button mat-mini-fab color="primary" class="upload-btn" (click)="rulesUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="border-box">
+    <p>
+    Now click the "Check Model/Compute Report" button to generate a report. This can take a few minutes, depending on the size of the model and the number of rules.
+    This will generate a <b>report file</b> which describes which fault rules can run on which equipment/systems. It also reports where equipment and systems do
+    not meet the requirements to run certain FDD rules, and describes the reasons why.
+    </p>
+    <div style="display: flex; gap: 2rem; padding: 1rem 0rem;">
+      <button mat-raised-button (click)="sendFiles()" ng-disabled="isLoading || manifestTtl || modelTtl || rulesJson"
+        color="primary">
+        <mat-spinner *ngIf="isLoading" diameter="20" mode="indeterminate"></mat-spinner>
+        <span *ngIf="!isLoading">Check Model and Compute Report</span>
+      </button>
+      <button mat-raised-button (click)="downloadFile()" download="rule_set.json" color="primary">Download selected rule
+        set</button>
+      <button mat-raised-button (click)="clearResults()" color="warn">Clear Results</button>
+    </div>
+  </div>
+
+
+  <!-- Buttons -->
+
+  <div class="border-box">
+    <p>
+    This report can be used to generate rule implementations for the selected model for various FDD engines.
+    We currently support the following exports:
+    </p>
+    <ul>
+      <li>PIsoft</li>
+      <li>Python-based FDD engine</li>
+    </ul>
+    <p>
+    First, select the rules you want to export. You can select all rules, or only the rules that are applicable to the selected model.
+    </p>
+    <div style="display: flex; gap: 2rem; padding: 1rem 0rem;">
+      <button mat-raised-button (click)="selectAll()" color="primary">Select All</button>
+      <button mat-raised-button (click)="deselectAll()" color="primary">Deselect All</button>
+      <button mat-raised-button (click)="selectApplicableOnly()" color="primary">Select Applicable Only</button>
+    </div>
+  </div>
+
+  <div class="border-box">
+    <p>
+    After the report is generated, you can view the report in the browser or download it as a Markdown file.
+    </p>
+    <div style="display: flex; gap: 2rem; padding: 1rem 0rem;">
+      <button mat-raised-button (click)="viewReport()" [disabled]="!results" color="primary">View Report</button>
+      <button mat-raised-button (click)="downloadReport()" [disabled]="!results" color="primary">Download Report</button>
+    </div>
+  </div>
+
+  <div class="border-box">
+    <p>
+      Generate an AFXML export for the uploaded rules file. This produces an Asset Framework XML you can import into PI AF.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <mat-form-field appearance="fill">
+        <mat-label>PI Server</mat-label>
+        <input matInput [value]="piServer" (input)="piServer = $any($event.target).value" placeholder="e.g., PISRV01">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>PI AF Database</mat-label>
+        <input matInput [value]="piDatabase" (input)="piDatabase = $any($event.target).value" placeholder="e.g., MyAFDatabase">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>AFExport.exe Path (optional)</mat-label>
+        <input matInput [value]="piExportPath" (input)="piExportPath = $any($event.target).value" placeholder="C:\Program Files\PIPC\AF\AFExport.exe">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>AFImport.exe Path (optional)</mat-label>
+        <input matInput [value]="piImportPath" (input)="piImportPath = $any($event.target).value" placeholder="C:\Program Files\PIPC\AF\AFImport.exe">
+      </mat-form-field>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem 0rem;">
+      <button mat-raised-button color="primary"
+              (click)="generateAFXML()"
+              [disabled]="!selectedModelId || !rulesJson || !piServer || !piDatabase || isExportingAFXML">
+        <mat-spinner *ngIf="isExportingAFXML" diameter="20" mode="indeterminate"></mat-spinner>
+        <span *ngIf="!isExportingAFXML">Generate AFXML Export</span>
+      </button>
+      <a *ngIf="afxmlUrl" [href]="afxmlSafeUrl" [download]="afxmlFilename">Download AFXML</a>
+    </div>
+  </div>
+
+  </div>
+  <div class="right-pane">
+    <h2>Validation Report</h2>
+  <ng-container *ngIf="results?.length; else noReport">
+    <mat-tab-group>
+    <mat-tab label="By Rule / Application">
+      <mat-accordion class="double-nested-results" multi *ngIf="results !== null">
+        <mat-expansion-panel *ngFor="let results of resultsByRule | keyvalue">
+          <mat-expansion-panel-header [ngStyle]="{'background-color': colorBySuccess[results.value.success]}">
+            <div>
+              <mat-checkbox [checked]="results.value.selected !== 'none'"
+                [indeterminate]="results.value.selected === 'some'"
+                (change)="toggleSelectedForNestedResult(results.value, 'rule')"
+                (click)="$event.stopPropagation()">
+              </mat-checkbox>
+              {{results.key}}
+            </div>
+          </mat-expansion-panel-header>
+          <mat-accordion class="example-headers-align" multi>
+            <mat-expansion-panel *ngFor="let result of results.value.results | keyvalue">
+              <mat-expansion-panel-header
+                [ngStyle]="{'background-color': (result.value.success ?  '#D9E8D9': '#ECC1C1')}">
+                <mat-checkbox [checked]="selectedByID[result.value.id]"
+                  (change)="toggleSelected(result.value)"
+                  (click)="$event.stopPropagation()">
+                </mat-checkbox>
+                {{result.value.focus_node}}
+              </mat-expansion-panel-header>
+              <ng-container *ngIf="detailsToList(result.value.details) as detailRows">
+                <table class="details-table" *ngIf="detailRows.length">
+                  <tbody>
+                    <tr *ngFor="let detail of detailRows">
+                      <td>{{ detail }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="details-empty" *ngIf="!detailRows.length">No details provided.</div>
+              </ng-container>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </mat-tab>
+
+    <mat-tab label="By Asset">
+      <mat-accordion class="double-nested-results" multi *ngIf="results !== null">
+        <mat-expansion-panel *ngFor="let results of resultsByFocusNode | keyvalue">
+          <mat-expansion-panel-header [ngStyle]="{'background-color': colorBySuccess[results.value.success]}">
+            <mat-checkbox [checked]="results.value.selected === 'all'"
+              [indeterminate]="results.value.selected === 'some'"
+              (change)="toggleSelectedForNestedResult(results.value, 'focusNode')"
+              (click)="$event.stopPropagation()">
+            </mat-checkbox>
+            {{results.key}}
+          </mat-expansion-panel-header>
+          <mat-accordion class="example-headers-align" multi>
+            <mat-expansion-panel *ngFor="let result of results.value.results | keyvalue">
+              <mat-expansion-panel-header
+                [ngStyle]="{'background-color': (result.value.success ?  '#D9E8D9': '#ECC1C1')}">
+                <div>
+                  <mat-checkbox [checked]="selectedByID[result.value.id]"
+                    (change)="toggleSelected(result.value)"
+                    (click)="$event.stopPropagation()"></mat-checkbox>
+                  {{result.value.rule}}
+                </div>
+              </mat-expansion-panel-header>
+              <ng-container *ngIf="detailsToList(result.value.details) as detailRows">
+                <table class="details-table" *ngIf="detailRows.length">
+                  <tbody>
+                    <tr *ngFor="let detail of detailRows">
+                      <td>{{ detail }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="details-empty" *ngIf="!detailRows.length">No details provided.</div>
+              </ng-container>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+  <ng-template #noReport>
+    <div class="empty-state">
+      <h3>No report yet</h3>
+      <p>Please select a model, upload a rules JSON file, then click "Check Model and Compute Report".</p>
+    </div>
+  </ng-template>
+</div>
+</div>

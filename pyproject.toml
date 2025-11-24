@@ -1,0 +1,31 @@
+[project]
+name = "interopmetadataapplications"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "accelerate>=1.10.0",
+    "brick-tq-shacl>=0.4.0",
+    "buildingmotif[topquadrant]",
+    "fastembed>=0.7.1",
+    "flask-cors>=6.0.1",
+    "jupyter>=1.1.1",
+    "logger>=1.4",
+    "lxml>=6.0.0",
+    "numba>=0.61.2",
+    "oxrdflib>=0.4.0",
+    "pandas>=2.3.1",
+    "polars>=1.32.2",
+    "pyontoenv>=0.4.0",
+    "q>=2.7",
+    "rdflib>=7.1.4",
+    "scipy>=1.16.1",
+    "torch~=2.6",
+    "tqdm>=4.67.1",
+    "transformers>=4.55.2",
+    "xmldiff>=2.7.0",
+]
+
+[tool.uv.sources]
+buildingmotif = { git = "https://github.com/NREL/BuildingMOTIF", rev = "gtf-demo-branch" }

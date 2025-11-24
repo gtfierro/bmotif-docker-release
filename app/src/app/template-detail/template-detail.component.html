@@ -1,0 +1,19 @@
+<div class="container" *ngIf="!!template">
+  <h3>Template: <u>{{template.name}}</u></h3>
+  <p>
+  A template is a reusable function which automates creating parts of a metadata model. It has a set of
+  parameters (red nodes, or those that begin with <code>urn:___param___</code>) that can be
+  "bound" to values provided from BMS points, user input, or other sources. "Evaluating"
+  a template creates a new graph that is a copy of the template, but with the parameters replaced with
+  the bound values. The template is not modified by this process.
+  </p>
+  <div class="toolbar">
+    <mat-checkbox [(ngModel)]="inline" (change)="onInlineToggle()">Inline dependencies</mat-checkbox>
+  </div>
+  <app-template-network *ngIf="renderNetwork" [templateId]="template.id" [inline]="inline"></app-template-network>
+  <div *ngIf="templateBody">
+    <h3>Template Body</h3>
+    <pre>{{templateBody}}</pre>
+  </div>
+</div>
+

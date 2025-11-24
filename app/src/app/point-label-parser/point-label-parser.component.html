@@ -1,0 +1,112 @@
+<div class="container">
+  <h2>Point Label Parser</h2>
+  <div style="padding: 1rem;">
+    <p>
+    This program will be applied to an uploaded file of point labels from the building to
+    extract the equipment identifiers and point identifiers from them. This will be used to generate a
+    Brick model of the building in the next step.
+    You can return to this page at any time to modify the parser.
+    </p>
+    <p>Below is an example parser for point labels like <code>315_VAV_01/DA-T</code>. The parser is written using
+    BuildingMOTIF's "parser combinator" Python framework. The parser is a series of functions that match
+    substrings of the input string and return tokens. The tokens are then used to generate a semantic model.
+    <b><u>TODO: replace the example with an open one that we can publish</u></b>
+    </p>
+    <p>
+    <b>Note:</b> The <i>Example Call</i> column below shows how to use the parser in Python code. When using
+    these in the actual parser, do not include the final parenthetical term, e.g. <code>('AHU12_Tmp')</code>.
+    This just shows which string the example parser code ran on.
+    </p>
+    <p><b>Note:</b> The resulting parser <u>must</u> be assigned to a variable called <code>my_parser</code>.</p>
+<table border="1">
+<thead>
+    <tr>
+        <th>Combinator Signature</th>
+        <th>Description</th>
+        <th>Example Call</th>
+        <th>Example Match</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td><code>string(s: str, type_name: TokenOrConstructor, id=None)</code></td>
+        <td>Constructs a parser that matches the specified string.</td>
+        <td><code>string("AHU", Identifier)('AHU236_Tmp')</code></td>
+        <td>Matches "AHU" and returns a token.</td>
+    </tr>
+    <tr>
+        <td><code>rest(type_name: TokenOrConstructor, id=None)</code></td>
+        <td>Matches the rest of the string after parsing everything else.</td>
+        <td><code>rest(Identifier)('AHU236_Tmp')</code></td>
+        <td>Applies to "_236_Tmp" if "AHU" was already parsed.</td>
+    </tr>
+    <tr>
+        <td><code>substring_n(length: int, type_name: TokenOrConstructor, id=None)</code></td>
+        <td>Matches a substring of specified length.</td>
+        <td><code>substring_n(3, Identifier)('AHU12_Tmp')</code></td>
+        <td>Matches "AHU".</td>
+    </tr>
+    <tr>
+        <td><code>regex(r: str, type_name: TokenOrConstructor, id=None)</code></td>
+        <td>Matches the beginning of a string against a regular expression.</td>
+        <td><code>regex(r"\d+", Identifier)('12_Tmp')</code></td>
+        <td>Matches "12".</td>
+    </tr>
+    <tr>
+        <td><code>choice(*parsers: Parser, id=None)</code></td>
+        <td>Tries to match one of the provided parsers.</td>
+        <td><code>choice(string("AHU", Identifier), string("VAV", Identifier))('VAV12_Tmp')</code></td>
+        <td>Matches using the "VAV" parser.</td>
+    </tr>
+    <tr>
+        <td><code>constant(type_name: Token, id=None)</code></td>
+        <td>Matches a constant token without consuming input.</td>
+        <td><code>constant(Constant(BRICK.Air_Handling_Unit))('AHU12_Tmp')</code></td>
+        <td>Simply returns the constant.</td>
+    </tr>
+    <tr>
+        <td><code>abbreviations(patterns: dict, id=None)</code></td>
+        <td>Maps substrings to tokens based on a dictionary of string matching. BuildingMOTIF provides existing dictionaries called <code>EQUIP_ABBREVIATIONS</code>
+          and <code>POINT_ABBREVIATIONS</code>.
+        </td>
+        <td><code>abbreviations({{ '{' }}"AHU": BRICK.Air_Handling_Unit})('AHU1')</code></td>
+        <td>Matches abbreviation to a type.</td>
+    </tr>
+    <tr>
+        <td><code>sequence(*parsers: Parser, id=None)</code></td>
+        <td>Applies parsers in order, expecting each to match consecutively.</td>
+        <td><code>sequence(string("AHU", Identifier), regex(r"\d+", Identifier))('AHU12_Tmp')</code></td>
+        <td>Matches "AHU" then digits.</td>
+    </tr>
+    <tr>
+        <td><code>many(seq_parser: Parser, id=None)</code></td>
+        <td>Repeatedly applies a sequence parser until it stops matching.</td>
+        <td><code>many(regex(r"[a-zA-Z]+", Identifier))('TmpTmpTmp')</code></td>
+        <td>Matches each "Tmp".</td>
+    </tr>
+    <tr>
+        <td><code>maybe(parser: Parser, id=None)</code></td>
+        <td>Optionally applies the given parser; no failure on mismatch.</td>
+        <td><code>maybe(string("_", Delimiter))('AHU12Tmp')</code></td>
+        <td>Optionally matches the underscore.</td>
+    </tr>
+    <tr>
+        <td><code>until(parser: Parser, type_name: TokenOrConstructor, id=None)</code></td>
+        <td>Matches everything until the given parser matches.</td>
+        <td><code>until(string("_", Delimiter), Identifier)('AHU12_Tmp_Sensor')</code></td>
+        <td>Matches "AHU12".</td>
+    </tr>
+  </tbody>
+  </table>
+  </div> <!-- padding -->
+  <ngx-codemirror
+    [options]="codeMirrorOptions"
+    [formControl]="parserSourceControl"
+    id="parserSrc">
+  </ngx-codemirror>
+  <input type="file" accept=".py,text/x-python,text/plain" #fileInput (change)="onFileSelected($event)" hidden>
+  <div class="actions">
+    <button mat-raised-button color="accent" (click)="fileInput.click()">Upload</button>
+    <button mat-raised-button color="primary" (click)="saveParserSource()">Save</button>
+  </div>
+</div>

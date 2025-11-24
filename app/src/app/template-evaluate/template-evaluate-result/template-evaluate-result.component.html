@@ -1,0 +1,21 @@
+<mat-progress-bar *ngIf="!evaluateTemplate" class="progess-bar" mode="query"></mat-progress-bar>
+
+<ngx-codemirror #codemirror
+class="graph"
+[options]="codeMirrorOptions"
+[(ngModel)]="evaluateTemplate">
+</ngx-codemirror>
+
+<div class="actions">
+    <button
+    mat-raised-button
+    matStepperPrevious>
+        Redo
+    </button>
+    <button 
+    (click)="addToModel()"
+    mat-raised-button
+    color="primary">
+        Add to Model
+    </button>
+</div>

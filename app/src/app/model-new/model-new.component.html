@@ -1,0 +1,83 @@
+<div class="container">
+    <h2>Create new Semantic Metadata Model</h2>
+    <div>
+      <p>
+      This page creates a new semantic metadata model from one of two sources:
+      </p>
+      <ul>
+        <li>From an existing model file in the Turtle format</li>
+        <li>From a point dump file in CSV format</li>
+      </ul>
+      <p>If the model is created from an existing Turtle file, then BuildingMOTIF will simply load the Turtle file into the database and associate it with this model. This is convenient for users who have a semantic model created through other external tools.
+      </p>
+      <p>A <b>point dump file</b> is a CSV file of all of the BMS (building management system) points in the building. BuildingMOTIF will parse the point dump file using the <a href="/parse-point-labels">point list parser</a> and the templates inferred from the <a href="/point-list-to-template">point schedules</a> to create a semantic model. The point dump file is a CSV file with a single <code>label</code> column.
+      </p>
+      <p>
+      The process of creating a semantic model from a point dump file uses a new method called <i>Semantic Graph Synthesis</i>. First, the parser identifies all of the building components that are mentioned in the label (air handling units, VAVs, sensors, zones, and other elements). Then, it uses libraries of equipment templates to suggest the most likely way that the components are connected to each other. This includes which equipment are connected to each other and which points are connected to which equipment. The result is a semantic model that is a graph of the building components and their connections to each other.
+      </p>
+      <p>
+      After this process is complete, the user can edit and validate the model.
+      We recommand going to the <a href="/point-label-checker">Point Label Checker</a> to check the point labels and point label parser for errors.
+      </p>
+    </div>
+    <div class="column">
+      <div class="row">
+        <form class="new-model-form" [formGroup]="newModelForm">
+          <h4>Model Information</h4>
+          <mat-form-field appearance="outline" floatLabel="never">
+            <input type="text"
+                   aria-label="model name"
+                   placeholder="model name"
+                   matInput
+                   formControlName="nameControl">
+            <mat-error *ngIf="newModelForm.get('nameControl')?.hasError('invalidCharacter')">
+              cannot contain &lt;, &gt;, &quot;, ^, &#123;, &#125;, &vert;, &bsol;, ^, or spaces
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" floatLabel="never">
+            <textarea type="text"
+                      aria-label="model description"
+                      placeholder="Example model for BuildingMOTIF demo"
+                      matInput
+                      formControlName="descriptionControl">
+            </textarea>
+          </mat-form-field>
+
+          <div class="method-section">
+            <h5>Method 1: Upload a Turtle (.ttl) file</h5>
+            <p class="help-text">
+              If you have an existing model in Turtle, upload it here. We will try to extract the model name from the owl:Ontology declaration and fill it in above.
+            </p>
+            <div>
+              <label for="modelTtlUpload">Upload Model TTL</label>
+              <input type="file" id="modelTtlUpload" (change)="handleModelTtlInput($event)" #modelTtlUpload formControlName="modelTtlControl" accept=".ttl,text/turtle">
+            </div>
+          </div>
+
+          <div class="method-section">
+            <h5>Method 2: Upload a point list (CSV)</h5>
+            <p class="help-text">
+              If you don't have a Turtle file, you can upload a point dump CSV and let BuildingMOTIF generate a model.
+            </p>
+            <div>
+              <label for="pointlistUpload">Upload Point List</label>
+              <input type="file" id="pointlistUpload" (change)="handlePointlistInput($event)" #pointlistUpload formControlName="pointlistControl" accept=".csv,text/csv">
+            </div>
+          </div>
+
+          <button mat-raised-button color="primary" (click)="createModel()" [disabled]="newModelForm.invalid || isLoading">
+            {{ isLoading ? 'Creating...' : 'Create Model' }}
+          </button>
+        </form>
+        <div class="modellist">
+          <h3>Existing Models</h3>
+          <mat-list>
+            <mat-list-item *ngFor="let m of modelsList">
+              <!-- link to model detail -->
+              <p mat-line><a [routerLink]="['/models', m.id]">{{m.name}}</a></p>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div> <!-- row -->
+    </div> <!-- column -->
+</div>
