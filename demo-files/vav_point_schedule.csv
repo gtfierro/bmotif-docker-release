@@ -1,0 +1,17 @@
+point,description
+HW-VLV,Heating Command
+DA-T,Discharge Air Temp Sensor
+SA-F,Supply Air Flow Sensor
+SAFLOW-SP,Supply Air Flow Setpoint
+OCC-CMD,Occupancy Command
+DPR-O,Damper Position
+ZN-T,Zone Temperature Sensor
+ZN-H,Zone Humidity Sensor
+ZN-SP,Zone Temperature Setpoint
+ZN-CO2,Zone CO2 Sensor
+OCC-CLG-SP,Occupied Cooling Air Temp Setpoint
+OCC-HTG-SP,Occupied Heating Air Temp Setpoint
+UNOCC-CLG-SP,Unoccupied Cooling Air Temp Setpoint
+UNOCC-HTG-SP,Unoccupied Heating Air Temp Setpoint
+EFFCLG-SP,Effective Cooling Air Temp Setpoint
+EFFHTG-SP,Effective Heating Air Temp Setpoint

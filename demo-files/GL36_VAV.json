@@ -1,0 +1,154 @@
+{
+    "G36VAV_SAT_POINTS" : {
+        "name" : "Guideline 36 - All supply air temperature control points and sensors are available for AFDD",
+        "aftype" : "analysis",
+        "aftimerule" : "Periodic",
+        "frequency" : 900,
+        "applicability" : ["Fan_Coil_Unit", "Variable_Air_Volume_Box"],
+        "definitions": {
+            "Supply_Air_Temperature_Sensor": {
+                "choice": [
+                    {"hasPoint": "Supply_Air_Temperature_Sensor"},
+                    {"hasPoint": "Discharge_Air_Temperature_Sensor"},
+                    {"hasPoint": "Air_Temperature_Sensor"}
+                ]
+            },
+            "Supply_Air_Temperature_Setpoint": {
+                "choice": [
+                    {"hasPoint": "Supply_Air_Temperature_Setpoint"},
+                    {"hasPoint": "Discharge_Air_Temperature_Setpoint"},
+                    {"hasPoint": "Air_Temperature_Setpoint"}
+                ]
+            }
+        },
+        "output" : "Supply_Air_Temperature_Average = MEAN(Supply_Air_Temperature_Sensor); Supply_Air_Temperature_Error_Threshold = 3.0;"
+    },
+  "VAV_ZONE_TEMP_DEVIATION": {
+    "name": "Zone temperature deviates from zone setpoint (occupied)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Zone_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Setpoint" }, { "hasPoint": "Zone_Temperature_Setpoint" } ] },
+      "Occupancy_Command": { "choice": [ { "hasPoint": "Occupancy_Command" } ] }
+    },
+    "output": "e_T = 1.0; IF (Occupancy_Command == 1) AND (ABS(Zone_Air_Temperature_Sensor - Zone_Air_Temperature_Setpoint) > e_T) THEN FLAG('ZoneTempDeviation');"
+  },
+
+  "VAV_COOLING_NOT_MET": {
+    "name": "Cooling not meeting setpoint (occupied or effective SP)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Effective_Cooling_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Effective_Cooling_Air_Temperature_Setpoint" } ] },
+      "Occupancy_Command": { "choice": [ { "hasPoint": "Occupancy_Command" } ] }
+    },
+    "output": "e_C = 1.0; IF (Zone_Air_Temperature_Sensor - Effective_Cooling_Air_Temperature_Setpoint > e_C) THEN FLAG('CoolingNotMet');"
+  },
+
+  "VAV_HEATING_NOT_MET": {
+    "name": "Heating not meeting setpoint (occupied or effective SP)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Effective_Heating_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Effective_Heating_Air_Temperature_Setpoint" } ] }
+    },
+    "output": "e_H = 1.0; IF (Effective_Heating_Air_Temperature_Setpoint - Zone_Air_Temperature_Sensor > e_H) THEN FLAG('HeatingNotMet');"
+  },
+
+  "VAV_SIMULTANEOUS_HEAT_DURING_COOL_DEMAND": {
+    "name": "Simultaneous heating during cooling demand (sequence conflict)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Heating_Command": { "choice": [ { "hasPoint": "Heating_Command" } ] },
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Effective_Cooling_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Effective_Cooling_Air_Temperature_Setpoint" } ] }
+    },
+    "output": "HC_min = 0.1; e_C = 0.5; IF (Heating_Command > HC_min) AND (Zone_Air_Temperature_Sensor - Effective_Cooling_Air_Temperature_Setpoint > e_C) THEN FLAG('SimultaneousHeatDuringCoolingDemand');"
+  },
+
+  "VAV_REHEAT_INEFFECTIVE": {
+    "name": "Reheat ineffective (heating commanded but discharge air not warmer than zone)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Heating_Command": { "choice": [ { "hasPoint": "Heating_Command" } ] },
+      "Discharge_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Discharge_Air_Temperature_Sensor" } ] },
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] }
+    },
+    "output": "HC_min = 0.1; ΔT_min_rise = 0.8; IF (Heating_Command > HC_min) AND (Discharge_Air_Temperature_Sensor < Zone_Air_Temperature_Sensor + ΔT_min_rise) THEN FLAG('ReheatIneffective');"
+  },
+
+  "VAV_REHEAT_LEAK_SUSPECTED": {
+    "name": "Reheat leakage suspected (heating off yet discharge air unusually warm)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Heating_Command": { "choice": [ { "hasPoint": "Heating_Command" } ] },
+      "Discharge_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Discharge_Air_Temperature_Sensor" } ] },
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Supply_Air_Flow_Sensor": { "choice": [ { "hasPoint": "Supply_Air_Flow_Sensor" } ] }
+    },
+    "output": "HC_max_off = 0.05; ΔT_leak = 1.5; V_min = 50; IF (Heating_Command <= HC_max_off) AND (Supply_Air_Flow_Sensor > V_min) AND (Discharge_Air_Temperature_Sensor - Zone_Air_Temperature_Sensor > ΔT_leak) THEN FLAG('ReheatLeakSuspected');"
+  },
+
+  "VAV_EXCESS_FLOW_IN_DEADBAND": {
+    "name": "Excess primary airflow while zone in deadband",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Effective_Cooling_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Effective_Cooling_Air_Temperature_Setpoint" } ] },
+      "Effective_Heating_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Effective_Heating_Air_Temperature_Setpoint" } ] },
+      "Supply_Air_Flow_Sensor": { "choice": [ { "hasPoint": "Supply_Air_Flow_Sensor" } ] }
+    },
+    "output": "V_deadband_max = 200; IF (Zone_Air_Temperature_Sensor >= Effective_Heating_Air_Temperature_Setpoint) AND (Zone_Air_Temperature_Sensor <= Effective_Cooling_Air_Temperature_Setpoint) AND (Supply_Air_Flow_Sensor > V_deadband_max) THEN FLAG('ExcessFlowInDeadband');"
+  },
+
+  "VAV_UNOCCUPIED_HEATING_ACTIVE": {
+    "name": "Heating active while unoccupied and above unocc heating SP (likely override/fault)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Occupancy_Command": { "choice": [ { "hasPoint": "Occupancy_Command" } ] },
+      "Heating_Command": { "choice": [ { "hasPoint": "Heating_Command" } ] },
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Unoccupied_Heating_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Unoccupied_Heating_Air_Temperature_Setpoint" } ] }
+    },
+    "output": "HC_min = 0.1; e_unocc = 0.5; IF (Occupancy_Command == 0) AND (Heating_Command > HC_min) AND (Zone_Air_Temperature_Sensor >= Unoccupied_Heating_Air_Temperature_Setpoint + e_unocc) THEN FLAG('UnoccupiedHeatingActive');"
+  },
+
+  "VAV_COOLING_INEFFECTIVE_HIGH_RH": {
+    "name": "Cooling demand with high RH and no cool-lower DAT indication (ineffective cooling)",
+    "aftype": "analysis",
+    "aftimerule": "Periodic",
+    "frequency": 900,
+    "applicability": ["Variable_Air_Volume_Box"],
+    "definitions": {
+      "Zone_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Temperature_Sensor" }, { "hasPoint": "Zone_Temperature_Sensor" } ] },
+      "Effective_Cooling_Air_Temperature_Setpoint": { "choice": [ { "hasPoint": "Effective_Cooling_Air_Temperature_Setpoint" } ] },
+      "Discharge_Air_Temperature_Sensor": { "choice": [ { "hasPoint": "Discharge_Air_Temperature_Sensor" } ] },
+      "Zone_Air_Humidity_Sensor": { "choice": [ { "hasPoint": "Zone_Air_Humidity_Sensor" }, { "hasPoint": "Zone_Humidity_Sensor" } ] }
+    },
+    "output": "e_C = 0.5; RH_hi = 65; ΔT_cool = 0.5; IF (Zone_Air_Temperature_Sensor - Effective_Cooling_Air_Temperature_Setpoint > e_C) AND (Zone_Air_Humidity_Sensor >= RH_hi) AND (Discharge_Air_Temperature_Sensor >= Zone_Air_Temperature_Sensor - ΔT_cool) THEN FLAG('CoolingIneffective_HighRH');"
+  }
+}
