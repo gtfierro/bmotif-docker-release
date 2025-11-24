@@ -1,0 +1,3 @@
+docker compose build
+docker push gtfierromines/interop_metadata_applications-app:latest
+docker push gtfierromines/interop_metadata_applications-api:latest

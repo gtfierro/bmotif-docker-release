@@ -80,11 +80,11 @@ def create_app():
         app.building_motif = BuildingMOTIF("sqlite:///db.db", shacl_engine="topquadrant", log_level=logging.INFO)
         app.building_motif.setup_tables()
         # set up libraries
-        brick = Library.load(ontology_graph="https://brickschema.org/schema/1.4.4/Brick.ttl", run_shacl_inference=False, overwrite=False)
+        brick = Library.load(ontology_graph="https://github.com/BrickSchema/Brick/releases/download/nightly/Brick.ttl", run_shacl_inference=False, overwrite=False)
         if os.path.exists(".ontoenv"):
             shutil.rmtree(".ontoenv")
         env = ontoenv.OntoEnv(strict=False, temporary=True)
-        env.add("https://brickschema.org/schema/1.4.4/Brick.ttl")
+        env.add("https://github.com/BrickSchema/Brick/releases/download/nightly/Brick.ttl")
         for uri in env.list_closure(URIRef("https://brickschema.org/schema/1.4/Brick")):
             if uri.startswith("<") and uri.endswith(">"):
                 uri = uri[1:-1]
